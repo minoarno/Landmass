@@ -28,12 +28,6 @@ public class TerrainManager : MonoBehaviour
         TerrainUpdate();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        TerrainUpdate();
-    }
-
     void TerrainUpdate()
     {
         if (_terrain == null)
@@ -154,5 +148,7 @@ public class TerrainManager : MonoBehaviour
             _height = 1;
         }
 
+
+        TerrainUpdate();
     }
 }

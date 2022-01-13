@@ -93,5 +93,10 @@ public class TerrainModifierLayer : MonoBehaviour
         {
             _terrainDetailScale = 1;
         }
+
+        if (_fixedSeed)
+        {
+            Random.InitState(_seed);
+        }
     }
 }
