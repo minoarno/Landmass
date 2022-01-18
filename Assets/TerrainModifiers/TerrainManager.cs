@@ -22,10 +22,20 @@ public class TerrainManager : MonoBehaviour
 
     [SerializeField] private LayerInteraction _layerInteraction;
 
+    private bool _dataIsUnchanged = true;
+
     // Start is called before the first frame update
     void Start()
     {
         TerrainUpdate();
+    }
+
+    private void Update()
+    {
+
+        if (_dataIsUnchanged) return;
+        TerrainUpdate();
+        _dataIsUnchanged = true;
     }
 
     void TerrainUpdate()
@@ -55,8 +65,6 @@ public class TerrainManager : MonoBehaviour
                 _terrain.terrainData = GenerateTerrainAdditive(_terrain.terrainData);
                 break;
         }
-
-
     }
 
     TerrainData GenerateTerrainAdditive(TerrainData terrainData)
@@ -138,17 +146,15 @@ public class TerrainManager : MonoBehaviour
 
     private void OnValidate()
     {
-        if (_width < 1)
+        if (_width < 10)
         {
-            _width = 1;
+            _width = 10;
         }
 
-        if (_height < 1)
+        if (_height < 10)
         {
-            _height = 1;
+            _height = 10;
         }
-
-
-        TerrainUpdate();
+        _dataIsUnchanged = false;
     }
 }

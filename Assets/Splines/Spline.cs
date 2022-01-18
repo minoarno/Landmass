@@ -20,7 +20,8 @@ public class Spline : MonoBehaviour
     [SerializeField] SplineSegment.PolynomialForm _form = SplineSegment.PolynomialForm.Bernstein;
 
     //Multiple continuous spline segments
-    public List<PointSpline> _points = new List<PointSpline>();
+    [SerializeField] private List<PointSpline> _points = new List<PointSpline>();
+    //public List<Vector3> _interpolatedPoints = new List<Vector3>();
 
     private void Start()
     {
@@ -150,5 +151,44 @@ public class Spline : MonoBehaviour
                P2 * (-9 * t2 + 6 * t) +
                P3 * (3 * t2);
 
+    }
+
+    public Vector3[] GetInterpolatedPositions()
+    {
+        List<Vector3> positions = new List<Vector3>();
+
+        positions.Add(_points[0].Position.position);
+
+        for (int i = 0; i < _points.Count - 1; i++)
+        {
+            Vector3 P0 = _points[i].Position.position;
+            Vector3 P1 = _points[i].NextSegmentP1.position;
+            Vector3 P2 = _points[i + 1].PreviousSegmentP3.position;
+            Vector3 P3 = _points[i + 1].Position.position;
+
+            float interpolationValue = 1f / (float)_interpolation;
+
+            switch (_form)
+            {
+                case SplineSegment.PolynomialForm.Bernstein:
+
+                    for (int r = 1; r <= _interpolation; r++)
+                    {
+                        Vector3 end = GetPointBernstein(P0, P1, P2, P3, interpolationValue * r);
+                        positions.Add(end);
+                    }
+                    break;
+                case SplineSegment.PolynomialForm.Normal:
+                default:
+                    for (int r = 1; r <= _interpolation; r++)
+                    {
+                        Vector3 end = GetPointNormal(P0, P1, P2, P3, interpolationValue * r);
+                        positions.Add(end);
+                    }
+                    break;
+            }
+        }
+
+        return positions.ToArray();
     }
 }
