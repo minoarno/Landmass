@@ -157,4 +157,9 @@ public class TerrainManager : MonoBehaviour
         }
         _dataIsUnchanged = false;
     }
+
+    public void DataIsChanged()
+    {
+        _dataIsUnchanged = false;
+    }
 }

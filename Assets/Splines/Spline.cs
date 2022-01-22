@@ -100,7 +100,7 @@ public class Spline : MonoBehaviour
             default:
                 for (int i = 0; i <= _interpolation; i++)
                 {
-                    Vector3 end = GetPointNormal(P0, P1, P2, P3, interpolationValue * i);
+                    Vector3 end = GetPointLerp(P0, P1, P2, P3, interpolationValue * i);
                     Gizmos.DrawLine(begin, end);
                     begin = end;
                 }
@@ -113,13 +113,13 @@ public class Spline : MonoBehaviour
         for (int i = 0; i <= _interpolation; i++)
         {
             Vector3 normal = GetNormal(P0, P1, P2, P3, interpolationValue * i);
-            Vector3 pos = GetPointNormal(P0, P1, P2, P3, interpolationValue * i);
+            Vector3 pos = GetPointLerp(P0, P1, P2, P3, interpolationValue * i);
             Gizmos.DrawLine(pos, pos + Quaternion.Euler(0, 90, 0) *  normal.normalized * 4f );
             Gizmos.DrawLine(pos, pos + Quaternion.Euler(0, 90, 0) *  normal.normalized * -4f );
         }
     }
 
-    private Vector3 GetPointNormal(Vector3 P0, Vector3 P1, Vector3 P2, Vector3 P3, float t)
+    private Vector3 GetPointLerp(Vector3 P0, Vector3 P1, Vector3 P2, Vector3 P3, float t)
     {
         float oneMinus = 1 - t;
         Vector3 A = Vector3.Lerp(P0, P1, t);
@@ -182,7 +182,7 @@ public class Spline : MonoBehaviour
                 default:
                     for (int r = 1; r <= _interpolation; r++)
                     {
-                        Vector3 end = GetPointNormal(P0, P1, P2, P3, interpolationValue * r);
+                        Vector3 end = GetPointLerp(P0, P1, P2, P3, interpolationValue * r);
                         positions.Add(end);
                     }
                     break;
