@@ -11,9 +11,9 @@ using UnityEngine.TerrainTools;
 public class TerrainModifierLayer : MonoBehaviour
 {
     public int Depth { get { return _depth; } set { _depth = value; } }
-    private int _width = 256;
+    protected int _width = 256;
     public int Width { get { return _width; } set { _width = value; } }
-    private int _height = 256;
+    protected int _height = 256;
     public int Height { get { return _height; } set { _height = value; } }
 
     [Header("Terrain Specifications")]
@@ -47,7 +47,7 @@ public class TerrainModifierLayer : MonoBehaviour
         }
     }
 
-    public float[,] GenerateHeights()
+    virtual public float[,] GenerateHeights()
     {
         float[,] heights = new float[_width, _height];
         for (int x = 0; x < _width; x++)
@@ -77,7 +77,7 @@ public class TerrainModifierLayer : MonoBehaviour
     }
 
     //This is called when the values in the inspector are changed
-    private void OnValidate()
+    protected void OnValidate()
     {
         if (_lacunarity < 1)
         {
@@ -102,13 +102,17 @@ public class TerrainModifierLayer : MonoBehaviour
         gameObject.GetComponentInParent<TerrainManager>().DataIsChanged();
     }
 
-    private void OnEnable()
+    protected void OnEnable()
     {
         gameObject.GetComponentInParent<TerrainManager>().DataIsChanged();
     }
 
-    private void OnDisable()
+    protected void OnDisable()
     {
-        gameObject.GetComponentInParent<TerrainManager>().DataIsChanged();
+        TerrainManager terrainManager = gameObject.GetComponentInParent<TerrainManager>();
+        if (terrainManager != null)
+        {
+            terrainManager.DataIsChanged();
+        }
     }
 }

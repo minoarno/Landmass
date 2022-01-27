@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[ExecuteInEditMode]
+//[ExecuteInEditMode]
 public class SplineTerrainEditor : MonoBehaviour
 {
     private Terrain _terrain;
@@ -15,8 +15,20 @@ public class SplineTerrainEditor : MonoBehaviour
     [Range(0f,1f)]
     [SerializeField] private float _StepSize = .03f;
 
+    [System.Serializable]
+    public enum MapShow
+    {
+        heightMap = 0,
+        colorMap = 1,
+        voronoi = 2
+    }
+
+    [SerializeField]
+    private MapShow _mapShow = MapShow.colorMap;
 
     Color _fillerColor = Color.clear;
+    float _fillerValue = float.MaxValue;
+
     Color[] _regionColors;
     Vector2[] _splinePoints;
     int _amountOfSplinePoints = 1;
@@ -27,29 +39,41 @@ public class SplineTerrainEditor : MonoBehaviour
     void Start()
     {
         _terrain = GetComponent<Terrain>();
+        _terrain.terrainData.heightmapResolution = _width + 1;
+
+        _splinePoints = GetSplineCoordinates();
+        _amountOfSplinePoints = _splinePoints.Length;
+
         FillInColors();
-        //_terrain.terrainData = CalculateVoronoi(_terrain.terrainData);
-        _terrain.terrainData = CalculateDistanceField(_terrain.terrainData);
+        UpdateSplineEditor();
     }
 
     private void Update()
     {
         if (_dataIsUnchanged) return;
+
         UpdateSplineEditor();
         _dataIsUnchanged = true;
     }
 
     public void UpdateSplineEditor()
     {
-        //_terrain.terrainData = CalculateVoronoi(_terrain.terrainData);
-        _terrain.terrainData = CalculateDistanceField(_terrain.terrainData);
+        switch(_mapShow)
+        {
+            case MapShow.colorMap:
+                _terrain.terrainData = DrawDistanceField(_terrain.terrainData);
+                break;
+            case MapShow.heightMap:
+                _terrain.terrainData = CalculateDistanceField(_terrain.terrainData);
+                break;
+            case MapShow.voronoi:
+                _terrain.terrainData = CalculateVoronoi(_terrain.terrainData);
+                break;
+        }
     }
 
     public void FillInColors()
     {
-        _splinePoints = GetSplineCoordinates();
-        _amountOfSplinePoints = _splinePoints.Length;
-
         _regionColors = new Color[_amountOfSplinePoints];
         for (int i = 0; i < _amountOfSplinePoints; i++)
         {
@@ -103,7 +127,7 @@ public class SplineTerrainEditor : MonoBehaviour
         return terrainData;
     }
 
-    private TerrainData CalculateDistanceField(TerrainData terrainData)
+    private TerrainData DrawDistanceField(TerrainData terrainData)
     {
         _splinePoints = GetSplineCoordinates();
 
@@ -112,8 +136,7 @@ public class SplineTerrainEditor : MonoBehaviour
         {
             for (int z = 0; z < _height; z++)
             {
-                //heights[x, z] = float.MinValue;
-                heights[x, z] = 0f;
+                heights[x, z] = (x + z);
             }
         }
 
@@ -124,20 +147,18 @@ public class SplineTerrainEditor : MonoBehaviour
             for (int z = 0; z < _height; z++)
             {
                 mainTexture.SetPixel(x, z, _fillerColor);
-                mainTexture.Apply();
             }
         }
-        
+        mainTexture.Apply();
+
         //Draw Spline Lines
         for (int i = 0; i < (_splinePoints.Length - 1); i++)
         {
             DrawLine(ref mainTexture, _splinePoints[i], _splinePoints[i + 1], Color.black);
-            mainTexture.Apply();
         }
+        mainTexture.Apply();
 
-        int amountOfTimes = 6;
-        //for (int i = 0; i < amountOfTimes; i++)
-        while(ThereAreStillSomeEmpty(ref mainTexture))
+        while (ThereAreStillSomeEmpty(ref mainTexture))
         {
             for (int x = 0; x < _width; x++)
             {
@@ -171,6 +192,74 @@ public class SplineTerrainEditor : MonoBehaviour
         }
 
         _terrain.materialTemplate.mainTexture = mainTexture;
+
+        terrainData.size = new Vector3(_width, _depth, _height);
+        terrainData.SetHeights(0, 0, heights);
+        return terrainData;
+    }
+
+    private TerrainData CalculateDistanceField(TerrainData terrainData)
+    {
+        _splinePoints = GetSplineCoordinates();
+
+        float[,] heights = new float[_width, _height];
+
+        for (int x = 0; x < _width; x++)
+        {
+            for (int z = 0; z < _height; z++)
+            {
+                heights[x, z] = _fillerValue;
+            }
+        }
+
+        float maxHeightTerrain = gameObject.transform.position.y;
+
+        //Draw Spline Lines
+        for (int i = 0; i < (_splinePoints.Length - 1); i++)
+        {
+            DrawLine(ref heights, _splinePoints[i], _splinePoints[i + 1], 0f);
+        }
+
+        while (ThereAreStillSomeEmpty(ref heights))
+        {
+            for (int x = 0; x < _width; x++)
+            {
+                for (int z = 0; z < _height; z++)
+                {
+                    float pixelHeight = heights[x, z];
+                    if (pixelHeight != _fillerValue)
+                    {
+                        float newHeight = pixelHeight + _StepSize;
+
+                        if (x - 1 >= 0 && (heights[x - 1, z] == _fillerValue || heights[x - 1, z] > newHeight))
+                        {
+                            heights[x - 1, z] = newHeight;
+                        }
+                        if (x + 1 < _width && (heights[x + 1, z] == _fillerValue || heights[x + 1, z] > newHeight))
+                        {
+                            heights[x + 1, z] = newHeight;
+                        }
+                        if (z - 1 >= 0 && (heights[x, z - 1] == _fillerValue || heights[x, z - 1] > newHeight))
+                        {
+                            heights[x, z - 1] = newHeight;
+                        }
+                        if (z + 1 < _height && (heights[x, z + 1] == _fillerValue || heights[x, z + 1] > newHeight))
+                        {
+                            heights[x, z + 1] = newHeight;
+                        }
+                    }
+                }
+            }
+        }
+
+        for (int x = 0; x < _width; x++)
+        {
+            for (int z = 0; z < _height; z++)
+            {
+                heights[x, z] = (1f - heights[x, z]) * _depth;
+            }
+        }
+
         terrainData.size = new Vector3(_width, _depth, _height);
         terrainData.SetHeights(0, 0, heights);
         return terrainData;
@@ -190,6 +279,20 @@ public class SplineTerrainEditor : MonoBehaviour
         }
         return false;
     }
+    public bool ThereAreStillSomeEmpty(ref float[,] grid)
+    {
+        for (int x = 0; x < _width; x++)
+        {
+            for (int z = 0; z < _height; z++)
+            {
+                if (grid[x, z] == _fillerValue)
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
     public void DrawLine(ref Texture2D tex, Vector2 p1, Vector2 p2, Color col)
     {
@@ -202,6 +305,20 @@ public class SplineTerrainEditor : MonoBehaviour
             t = Vector2.Lerp(p1, p2, ctr);
             ctr += frac;
             tex.SetPixel((int)t.x, (int)t.y, col);
+        }
+    }
+
+    public void DrawLine(ref float[,] grid, Vector2 p1, Vector2 p2, float value)
+    {
+        Vector2 t = p1;
+        float frac = 1 / Mathf.Sqrt(Mathf.Pow(p2.x - p1.x, 2) + Mathf.Pow(p2.y - p1.y, 2));
+        float ctr = 0;
+
+        while ((int)t.x != (int)p2.x || (int)t.y != (int)p2.y)
+        {
+            t = Vector2.Lerp(p1, p2, ctr);
+            ctr += frac;
+            grid[(int)t.y,(int)t.x] = value;
         }
     }
 
@@ -229,5 +346,7 @@ public class SplineTerrainEditor : MonoBehaviour
     private void OnValidate()
     {
         _dataIsUnchanged = false;
+        _splinePoints = GetSplineCoordinates();
+        _amountOfSplinePoints = _splinePoints.Length;
     }
 }

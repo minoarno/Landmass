@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[ExecuteAlways]
+//[ExecuteAlways]
 [RequireComponent(typeof(MeshFilter),typeof(MeshRenderer))]
 public class TerrainGenerator : MonoBehaviour
 {

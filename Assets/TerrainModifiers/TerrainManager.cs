@@ -32,7 +32,6 @@ public class TerrainManager : MonoBehaviour
 
     private void Update()
     {
-
         if (_dataIsUnchanged) return;
         TerrainUpdate();
         _dataIsUnchanged = true;
