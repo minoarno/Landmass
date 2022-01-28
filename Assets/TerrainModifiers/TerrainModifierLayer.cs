@@ -99,23 +99,20 @@ public class TerrainModifierLayer : MonoBehaviour
             Random.InitState(_seed);
         }
 
-        TerrainManager terrainManager = gameObject.GetComponentInParent<TerrainManager>();
-        if (terrainManager != null)
-        {
-            terrainManager.DataIsChanged();
-        }
+        DataIsChanged();
     }
 
     protected void OnEnable()
     {
-        TerrainManager terrainManager = gameObject.GetComponentInParent<TerrainManager>();
-        if (terrainManager != null)
-        {
-            terrainManager.DataIsChanged();
-        }
+        DataIsChanged();
     }
 
     protected void OnDisable()
+    {
+        DataIsChanged();
+    }
+
+    public void DataIsChanged()
     {
         TerrainManager terrainManager = gameObject.GetComponentInParent<TerrainManager>();
         if (terrainManager != null)

@@ -79,7 +79,14 @@ public class Spline : MonoBehaviour
         }
     }
 
-
+    public void UpdateSpline()
+    {
+        SplineTerrainLayer splineTerrainLayer = gameObject.GetComponentInParent<SplineTerrainLayer>();
+        if (splineTerrainLayer != null)
+        {
+            splineTerrainLayer.DataIsChanged();
+        }
+    }
 
     private void DrawSegment(Vector3 P0, Vector3 P1, Vector3 P2, Vector3 P3, float interpolationValue)
     {

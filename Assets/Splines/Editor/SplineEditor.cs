@@ -17,5 +17,11 @@ public class SplineEditor : Editor
             //Will activate when pressed.
             spline.AddPosition(Vector3.zero);
         }
+
+        if (GUILayout.Button("Update Spline"))
+        {
+            //Will activate when pressed.
+            spline.UpdateSpline();
+        }
     }
 }
