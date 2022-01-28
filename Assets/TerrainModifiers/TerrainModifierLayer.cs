@@ -24,7 +24,7 @@ public class TerrainModifierLayer : MonoBehaviour
     //[SerializeField] private bool _invert = false;
     [SerializeField] private int _octaves = 2;
     [Range(0,1)]
-    [SerializeField] private float _persistance = 1f;
+    [SerializeField] private float _persistence = 1f;
     [SerializeField] private float _lacunarity = 1f;
 
     [Header("Random Generator")]
@@ -62,7 +62,7 @@ public class TerrainModifierLayer : MonoBehaviour
                     float perlinValue = Mathf.PerlinNoise(xCoord, zCoord) * 2 - 1;
 
                     noiseHeight += perlinValue * amplitude;
-                    amplitude *= _persistance;
+                    amplitude *= _persistence;
                     frequency *= _lacunarity;
                 }
 

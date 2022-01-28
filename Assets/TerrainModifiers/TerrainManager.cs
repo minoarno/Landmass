@@ -9,7 +9,7 @@ public class TerrainManager : MonoBehaviour
     public enum LayerInteraction
     {
         ADDITIVE = 0,
-        OCTAVES = 1
+        LERPED = 1
     }
 
     [Header("Terrain Specifications")]
@@ -51,12 +51,13 @@ public class TerrainManager : MonoBehaviour
             {
                 _terrains.Add(terrains[i]);
                 _terrains[i].Width = _width;
+                _terrains[i].Height = _height;
             }
         }
 
         switch (_layerInteraction)
         {
-            case LayerInteraction.OCTAVES:
+            case LayerInteraction.LERPED:
                 _terrain.terrainData = GenerateTerrainOctaves(_terrain.terrainData);
                 break;
             case LayerInteraction.ADDITIVE:
