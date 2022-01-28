@@ -111,6 +111,7 @@ public class SplineTerrainLayer : TerrainModifierLayer
         return false;
     }
 
+    //https://answers.unity.com/questions/244417/create-line-on-a-texture.html
     public void DrawLine(ref float[,] grid, Vector2 p1, Vector2 p2, float value)
     {
         Vector2 t = p1;

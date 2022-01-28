@@ -33,10 +33,6 @@ public class TerrainModifierLayer : MonoBehaviour
     [SerializeField] private float _offsetX = 0f;
     [SerializeField] private float _offsetZ = 0f;
 
-    [SerializeField] float amplitude = 1f;
-    [SerializeField] float frequency = 1f;
-    //[SerializeField] float noiseHeight = 0f;
-
     // Start is called before the first frame update
     void Start()
     {
@@ -54,8 +50,8 @@ public class TerrainModifierLayer : MonoBehaviour
         {
             for (int z = 0; z < _height; z++)
             {
-                amplitude = 1f;
-                frequency = 1f;
+                float amplitude = 1f;
+                float frequency = 1f;
                 float noiseHeight = 0f;
 
                 for (int o = 0; o < _octaves; o++)

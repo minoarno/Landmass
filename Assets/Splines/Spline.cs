@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -77,6 +78,19 @@ public class Spline : MonoBehaviour
             DrawSegment(P0, P1, P2, P3, interpolationValue);
             DrawNormal(P0, P1, P2, P3, interpolationValue);
         }
+    }
+
+    public void BenchmarkSpline()
+    {
+        float interpolationValue = 1f / (float)_interpolation;
+
+        DateTime start = DateTime.Now;
+        for (int i = 0; i < 1000; i++)
+        {
+            GetInterpolatedPositions();
+        }
+        DateTime end = DateTime.Now;
+        Debug.Log((end-start).TotalMilliseconds + "ms");
     }
 
     public void UpdateSpline()

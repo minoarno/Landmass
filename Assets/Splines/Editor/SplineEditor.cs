@@ -23,5 +23,11 @@ public class SplineEditor : Editor
             //Will activate when pressed.
             spline.UpdateSpline();
         }
+
+        if (GUILayout.Button("Benchmark"))
+        {
+            //Will activate when pressed.
+            spline.BenchmarkSpline();
+        }
     }
 }
