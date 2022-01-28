@@ -7,7 +7,7 @@ public class SplineTerrainLayer : TerrainModifierLayer
     float _fillerValue = float.MaxValue;
     Vector2[] _splinePoints;
     int _amountOfSplinePoints = 1;
-    [Range(0f, 0.1f)]
+    [DelayedAttribute][Range(0f, 0.1f)]
     [SerializeField] private float _StepSize = .003f;
 
     [SerializeField] private List<Spline> _splines = new List<Spline>();

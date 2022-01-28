@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-//[ExecuteInEditMode]
+[ExecuteInEditMode]
 public class SplineTerrainEditor : MonoBehaviour
 {
     private Terrain _terrain;
@@ -81,9 +81,11 @@ public class SplineTerrainEditor : MonoBehaviour
         }
     }
 
+    //https://www.youtube.com/watch?v=iGr_NXnKxgk
     private TerrainData CalculateVoronoi(TerrainData terrainData)
     {
         _splinePoints = GetSplineCoordinates();
+        _amountOfSplinePoints = _splinePoints.Length;
 
         float[,] heights = new float[_width, _height];
 
@@ -130,13 +132,14 @@ public class SplineTerrainEditor : MonoBehaviour
     private TerrainData DrawDistanceField(TerrainData terrainData)
     {
         _splinePoints = GetSplineCoordinates();
+        _amountOfSplinePoints = _splinePoints.Length;
 
         float[,] heights = new float[_width, _height];
         for (int x = 0; x < _width; x++)
         {
             for (int z = 0; z < _height; z++)
             {
-                heights[x, z] = (x + z);
+                heights[x, z] = 0f;
             }
         }
 
@@ -201,6 +204,7 @@ public class SplineTerrainEditor : MonoBehaviour
     private TerrainData CalculateDistanceField(TerrainData terrainData)
     {
         _splinePoints = GetSplineCoordinates();
+        _amountOfSplinePoints = _splinePoints.Length;
 
         float[,] heights = new float[_width, _height];
 
@@ -249,14 +253,6 @@ public class SplineTerrainEditor : MonoBehaviour
                         }
                     }
                 }
-            }
-        }
-
-        for (int x = 0; x < _width; x++)
-        {
-            for (int z = 0; z < _height; z++)
-            {
-                heights[x, z] = (1f - heights[x, z]) * _depth;
             }
         }
 
@@ -346,7 +342,5 @@ public class SplineTerrainEditor : MonoBehaviour
     private void OnValidate()
     {
         _dataIsUnchanged = false;
-        _splinePoints = GetSplineCoordinates();
-        _amountOfSplinePoints = _splinePoints.Length;
     }
 }
